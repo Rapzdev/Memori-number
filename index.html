@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<title>Memory Game Ranggjoo 😋</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1e1e2f, #3a1c71);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+    }
+
+    .game-container {
+        background: rgba(0,0,0,0.35);
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        text-align: center;
+        max-width: 420px;
+        width: 100%;
+    }
+
+    h1 {
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+
+    p {
+        font-size: 14px;
+        opacity: 0.85;
+    }
+
+    .grid {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+    }
+
+    .card {
+        height: 70px;
+        background: linear-gradient(145deg, #ff4e50, #f9d423);
+        border-radius: 15px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        font-weight: bold;
+        color: transparent;
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+
+    .card.open,
+    .card.matched {
+        color: #1e1e2f;
+        background: linear-gradient(145deg, #43cea2, #185a9d);
+        cursor: default;
+    }
+
+    .card.matched {
+        box-shadow: 0 0 15px rgba(67, 206, 162, 0.8);
+    }
+
+    .card.eight {
+        background: linear-gradient(145deg, #ff512f, #dd2476);
+    }
+
+    footer {
+        margin-top: 15px;
+        font-size: 12px;
+        opacity: 0.7;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="game-container">
+    <h1>Memory Game 🎮</h1>
+    <p>Padankan semua nombor</p>
+
+    <div class="grid" id="gameGrid"></div>
+
+    <footer>
+        Nombor yang saya suka✨
+    </footer>
+</div>
+
+<script>
+    const numbers = [1,1,2,2,3,3,4,4,8,8];
+    let shuffled = numbers.sort(() => 0.5 - Math.random());
+
+    const grid = document.getElementById("gameGrid");
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+
+    shuffled.forEach(num => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        if (num === 8) card.classList.add("eight");
+        card.dataset.number = num;
+        card.textContent = num;
+        grid.appendChild(card);
+
+        card.addEventListener("click", () => flipCard(card));
+    });
+
+    function flipCard(card) {
+        if (lockBoard) return;
+        if (card.classList.contains("open") || card.classList.contains("matched")) return;
+
+        card.classList.add("open");
+
+        if (!firstCard) {
+            firstCard = card;
+            return;
+        }
+
+        secondCard = card;
+        lockBoard = true;
+
+        const num1 = firstCard.dataset.number;
+        const num2 = secondCard.dataset.number;
+
+        if (num1 === "8" && num2 === "8") {
+            setTimeout(() => {
+                alert("nombor 8 tidak boleh diselesaikan sebab ini nombor kesukaan ranggjoo😋");
+                resetCards();
+            }, 500);
+            return;
+        }
+
+        if (num1 === num2) {
+            firstCard.classList.add("matched");
+            secondCard.classList.add("matched");
+            resetCards(true);
+        } else {
+            setTimeout(() => {
+                firstCard.classList.remove("open");
+                secondCard.classList.remove("open");
+                resetCards();
+            }, 800);
+        }
+    }
+
+    function resetCards(matched = false) {
+        firstCard = null;
+        secondCard = null;
+        lockBoard = false;
+    }
+</script>
+
+</body>
+</html>
